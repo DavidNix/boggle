@@ -9,11 +9,11 @@ func TestDictionary_Exists(t *testing.T) {
 	dict, err := NewDictionary()
 	require.NoError(t, err)
 
-	for _, word := range []string{"cat", "dog", "aardvark", "umbrella"} {
+	for _, word := range []string{"cat", "dog", "aardvark", "UMBRELLA", "ChEEse"} {
 		require.True(t, dict.Exists(word), word)
 	}
 
-	for _, word := range []string{"78393", "billyjean", "octember", "rstudio", "locutus"} {
+	for _, word := range []string{"78393", "billyjean", "Octember", "rstudio", "locutus"} {
 		require.False(t, dict.Exists(word), word)
 	}
 }
