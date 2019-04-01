@@ -2,29 +2,36 @@ package boggle
 
 import (
 	"bufio"
+	"github.com/DavidNix/boggle/internal/trie"
 	"github.com/pkg/errors"
 	"os"
 	"strings"
 )
 
-type Dictionary map[string] struct{}
+type Dictionary struct {
+	*trie.Node
+}
 
 func NewDictionary() (Dictionary, error) {
 	f, err := os.Open("en.txt")
 	if err != nil {
-		return nil, errors.Wrap(err, "NewDictionary")
+		return Dictionary{}, errors.Wrap(err, "NewDictionary file")
 	}
 	defer f.Close()
 
-	dict := make(Dictionary)
+	trie := trie.New()
+
 	sn := bufio.NewScanner(f)
 	for sn.Scan() {
-		dict[sn.Text()] = struct{}{}
+		trie.Insert(sn.Text())
 	}
-	return dict, errors.Wrap(sn.Err(), "NewDictionary")
+	if sn.Err() != nil {
+		return Dictionary{}, errors.Wrap(sn.Err(), "NewDictionary scan")
+	}
+
+	return Dictionary{Node: trie}, nil
 }
 
-func (dict Dictionary) Exists(word string) bool {
-	_, ok := dict[strings.ToLower(word)]
-	return ok
+func (d Dictionary) Exists(word string) (prefixExists, wordExists bool) {
+	return d.Node.Exists(strings.ToLower(word))
 }

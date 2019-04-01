@@ -19,7 +19,8 @@ func (wf *WordFinder) Visit(node *Node, letters string) bool {
 	if len(letters) < 3 {
 		return false
 	}
-	if wf.dict.Exists(letters) {
+	_, ok := wf.dict.Exists(letters)
+	if ok {
 		wf.Found = append(wf.Found, Entry{Word: letters, Path: node.Path()})
 	}
 	return false
@@ -42,7 +43,8 @@ func (cf *ConcurrentFinder) Visit(node *Node, letters string) bool {
 	if len(letters) < 3 {
 		return false
 	}
-	if cf.dict.Exists(letters) {
+	_, ok := cf.dict.Exists(letters)
+	if ok {
 		cf.Entries <- Entry{Word: letters, Path: node.Path()}
 	}
 	return false
