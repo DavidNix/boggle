@@ -1,5 +1,9 @@
 package boggle
 
+import (
+	"sync"
+)
+
 type Coordinate []int
 
 func (c Coordinate) Row() int { return c[0] }
@@ -32,19 +36,44 @@ type Visitor interface {
 	Visit(node *Node, letters string) bool
 }
 
+type ConcurrentVisitor interface {
+	Visitor
+	Done()
+}
+
 type Board [][]string
 
 func (b Board) Traverse(v Visitor) {
 	for row := 0; row < len(b); row ++ {
 		for col := 0; col < len(b[row]); col ++ {
-			root := Node{
-				Row: row,
-				Col: col,
-				length: 1,
-			}
-			b.visit(&root, v, "")
+				root := Node{
+					Row: row,
+					Col: col,
+					length: 1,
+				}
+				b.visit(&root, v, "")
 		}
 	}
+}
+
+func (b Board) TraverseConcurrent(v ConcurrentVisitor) {
+	var wg sync.WaitGroup
+	defer v.Done()
+	for row := 0; row < len(b); row ++ {
+		for col := 0; col < len(b[row]); col ++ {
+			wg.Add(1)
+			go func(row, col int) {
+				root := Node{
+					Row: row,
+					Col: col,
+					length: 1,
+				}
+				b.visit(&root, v, "")
+				wg.Done()
+			}(row, col)
+		}
+	}
+	wg.Wait()
 }
 
 var adjCoords = []Coordinate {

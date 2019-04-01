@@ -25,5 +25,29 @@ func (wf *WordFinder) Visit(node *Node, letters string) bool {
 	return false
 }
 
+type ConcurrentFinder struct {
+	dict Dictionary
 
+	Entries chan Entry
+}
 
+func NewConcurrentVisitor(dict Dictionary) *ConcurrentFinder {
+	return &ConcurrentFinder{
+		dict: dict,
+		Entries: make(chan Entry, 1000),
+	}
+}
+
+func (cf *ConcurrentFinder) Visit(node *Node, letters string) bool {
+	if len(letters) < 3 {
+		return false
+	}
+	if cf.dict.Exists(letters) {
+		cf.Entries <- Entry{Word: letters, Path: node.Path()}
+	}
+	return false
+}
+
+func (cf *ConcurrentFinder) Done() {
+	close(cf.Entries)
+}
