@@ -8,11 +8,13 @@ import (
 
 type visitor struct {
 	Visited []string
+	Nodes []*Node
 	Stop func(s string) bool
 }
 
-func (v *visitor) Visit(letters string) bool {
+func (v *visitor) Visit(node *Node, letters string) bool {
 	v.Visited = append(v.Visited, letters)
+	v.Nodes  = append(v.Nodes, node)
 	if v.Stop == nil {
 		return false
 	}
@@ -42,6 +44,12 @@ func TestBoard_Traverse(t *testing.T) {
 		require.NotEmpty(t, letters)
 		require.True(t, len(letters) <= 4)
 	}
+
+	path := []Coordinate{{0, 0}, {0,1}, {1,1}}
+	require.Equal(t, path, v.Nodes[2].Path())
+
+	path = []Coordinate{{0, 0}, {0,1}, {1,0}, {1,1}}
+	require.Equal(t, path, v.Nodes[5].Path())
 }
 
 func TestBoard_Traverse_stop(t *testing.T) {
