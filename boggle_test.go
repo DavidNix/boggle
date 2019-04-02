@@ -8,13 +8,13 @@ import (
 
 type visitor struct {
 	Visited []string
-	Nodes []*BoardNode
-	Stop func(s string) bool
+	Nodes   []*BoardNode
+	Stop    func(s string) bool
 }
 
 func (v *visitor) Visit(node *BoardNode, letters string) bool {
 	v.Visited = append(v.Visited, letters)
-	v.Nodes  = append(v.Nodes, node)
+	v.Nodes = append(v.Nodes, node)
 	if v.Stop == nil {
 		return false
 	}
@@ -32,7 +32,7 @@ func TestBoard_Traverse(t *testing.T) {
 
 	expected := "A AB ABD ABDC ABC ABCD AD ADB ADBC ADC ADCB AC ACB ACBD ACD ACDB"
 
-	for _, val := range strings.Split(expected, " "){
+	for _, val := range strings.Split(expected, " ") {
 		require.Contains(t, v.Visited, val)
 	}
 
@@ -45,10 +45,10 @@ func TestBoard_Traverse(t *testing.T) {
 		require.True(t, len(letters) <= 4)
 	}
 
-	path := []Coordinate{{0, 0}, {0,1}, {1,1}}
+	path := []Coordinate{{0, 0}, {0, 1}, {1, 1}}
 	require.Equal(t, path, v.Nodes[2].Path())
 
-	path = []Coordinate{{0, 0}, {0,1}, {1,0}, {1,1}}
+	path = []Coordinate{{0, 0}, {0, 1}, {1, 0}, {1, 1}}
 	require.Equal(t, path, v.Nodes[5].Path())
 }
 

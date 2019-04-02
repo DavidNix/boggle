@@ -7,12 +7,12 @@ import (
 
 type Coordinate []int
 
-func (c Coordinate) Row() int { return c[0] }
-func (c Coordinate) Col() int { return c[1] }
-func (c Coordinate) String() string {return fmt.Sprintf("%d-%d", c.Row(), c.Col())}
+func (c Coordinate) Row() int       { return c[0] }
+func (c Coordinate) Col() int       { return c[1] }
+func (c Coordinate) String() string { return fmt.Sprintf("%d-%d", c.Row(), c.Col()) }
 
 type BoardNode struct {
-	Parent *BoardNode
+	Parent   *BoardNode
 	Row, Col int
 
 	length int
@@ -45,14 +45,14 @@ type ConcurrentVisitor interface {
 type Board [][]string
 
 func (b Board) Traverse(v Visitor) {
-	for row := 0; row < len(b); row ++ {
-		for col := 0; col < len(b[row]); col ++ {
-				root := BoardNode{
-					Row: row,
-					Col: col,
-					length: 1,
-				}
-				b.visit(&root, v, "")
+	for row := 0; row < len(b); row++ {
+		for col := 0; col < len(b[row]); col++ {
+			root := BoardNode{
+				Row:    row,
+				Col:    col,
+				length: 1,
+			}
+			b.visit(&root, v, "")
 		}
 	}
 }
@@ -60,13 +60,13 @@ func (b Board) Traverse(v Visitor) {
 func (b Board) TraverseConcurrent(v ConcurrentVisitor) {
 	var wg sync.WaitGroup
 	defer v.Done()
-	for row := 0; row < len(b); row ++ {
-		for col := 0; col < len(b[row]); col ++ {
+	for row := 0; row < len(b); row++ {
+		for col := 0; col < len(b[row]); col++ {
 			wg.Add(1)
 			go func(row, col int) {
 				root := BoardNode{
-					Row: row,
-					Col: col,
+					Row:    row,
+					Col:    col,
 					length: 1,
 				}
 				b.visit(&root, v, "")
@@ -77,7 +77,7 @@ func (b Board) TraverseConcurrent(v ConcurrentVisitor) {
 	wg.Wait()
 }
 
-var adjCoords = []Coordinate {
+var adjCoords = []Coordinate{
 	{-1, 0},
 	{-1, 1},
 	{0, 1},
@@ -97,7 +97,7 @@ func (b Board) visit(node *BoardNode, visitor Visitor, cum string) {
 	}
 
 	for _, coord := range adjCoords {
-		child := &BoardNode{Row: node.Row + coord.Row(), Col: node.Col + coord.Col(), Parent: node, length: node.length+1}
+		child := &BoardNode{Row: node.Row + coord.Row(), Col: node.Col + coord.Col(), Parent: node, length: node.length + 1}
 		if child.Row >= 0 && child.Row < len(b) && child.Col >= 0 && child.Col < len(b) && !visited(node, child) {
 			b.visit(child, visitor, cum)
 		}
@@ -113,4 +113,3 @@ func visited(parent, node *BoardNode) bool {
 	}
 	return visited(parent.Parent, node)
 }
-

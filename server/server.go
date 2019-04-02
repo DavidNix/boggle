@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-const timeout = 60*time.Second
+const timeout = 60 * time.Second
 
 func ListenAndServe(port string) error {
 	dict, err := boggle.NewDictionary()
@@ -20,9 +20,9 @@ func ListenAndServe(port string) error {
 	log.Println("Loaded dictionary")
 
 	srv := &http.Server{
-		Addr: ":"+port,
-		Handler: mux(dict),
-		ReadTimeout: timeout,
+		Addr:         ":" + port,
+		Handler:      mux(dict),
+		ReadTimeout:  timeout,
 		WriteTimeout: timeout,
 	}
 	return srv.ListenAndServe()
@@ -40,5 +40,3 @@ func mux(dict boggle.Dictionary) chi.Router {
 
 	return r
 }
-
-

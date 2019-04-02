@@ -66,10 +66,10 @@ func renderResults(w http.ResponseWriter, board boggle.Board, entries []boggle.E
 	for i := range entries {
 		ep[i] = entryPresenter{entries[i]}
 	}
-	data := struct{
-		Board boggle.Board
+	data := struct {
+		Board   boggle.Board
 		Entries []entryPresenter
-	} {Board: board, Entries: ep}
+	}{Board: board, Entries: ep}
 	if e := resultsTmpl.Execute(w, data); e != nil {
 		panic(e)
 	}
