@@ -1,9 +1,9 @@
 package trie
 
 type Node struct {
-	children map[rune]*Node
+	children   map[rune]*Node
 	isTerminal bool
-	value rune
+	value      rune
 }
 
 func New() *Node {
@@ -12,9 +12,9 @@ func New() *Node {
 	}
 }
 
-func (node *Node) Insert(word string) {
+func (node *Node) Insert(word []rune) {
 	cur := node
-	for _, char := range []rune(word) {
+	for _, char := range word {
 		letter := char
 		child, ok := cur.children[letter]
 		if ok {
@@ -29,12 +29,12 @@ func (node *Node) Insert(word string) {
 	cur.isTerminal = true
 }
 
-func (node *Node) Exists(word string) (prefixExists, wordExists bool) {
-	if word == "" {
+func (node *Node) Exists(word []rune) (prefixExists, wordExists bool) {
+	if len(word) == 0 {
 		return false, false
 	}
 	cur := node
-	for _, char := range []rune(word) {
+	for _, char := range word {
 		letter := char
 
 		child, ok := cur.children[letter]

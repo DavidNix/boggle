@@ -16,17 +16,11 @@ func NewVisitor(dict Dictionary) *WordFinder {
 }
 
 func (wf *WordFinder) Visit(node *BoardNode, letters string) bool {
-	if len(letters) < 3 {
-		return false
+	entry, stop := findWord(node, wf.dict, []rune(letters))
+	if entry.Word != "" {
+		wf.Found = append(wf.Found, entry)
 	}
-	prefix, isWord := wf.dict.Exists(letters)
-	if !prefix {
-		return true
-	}
-	if isWord {
-		wf.Found = append(wf.Found, Entry{Word: letters, Path: node.Path()})
-	}
-	return false
+	return stop
 }
 
 type ConcurrentFinder struct {
@@ -37,25 +31,33 @@ type ConcurrentFinder struct {
 
 func NewConcurrentVisitor(dict Dictionary) *ConcurrentFinder {
 	return &ConcurrentFinder{
-		dict: dict,
+		dict:    dict,
 		Entries: make(chan Entry, 1000),
 	}
 }
 
 func (cf *ConcurrentFinder) Visit(node *BoardNode, letters string) bool {
-	if len(letters) < 3 {
-		return false
+	entry, stop := findWord(node, cf.dict, []rune(letters))
+	if entry.Word != "" {
+		cf.Entries <- entry
 	}
-	prefix, isWord := cf.dict.Exists(letters)
-	if !prefix {
-		return true
-	}
-	if isWord {
-		cf.Entries <- Entry{Word: letters, Path: node.Path()}
-	}
-	return false
+	return stop
 }
 
 func (cf *ConcurrentFinder) Done() {
 	close(cf.Entries)
+}
+
+func findWord(node *BoardNode, dict Dictionary, letters []rune) (Entry, bool) {
+	if len(letters) < 3 {
+		return Entry{}, false
+	}
+	prefix, isWord := dict.Exists(letters)
+	if !prefix {
+		return Entry{}, true
+	}
+	if isWord {
+		return Entry{Word: string(letters), Path: node.Path()}, false
+	}
+	return Entry{}, false
 }

@@ -2,10 +2,11 @@ package boggle
 
 import (
 	"bufio"
-	"github.com/DavidNix/boggle/trie"
-	"github.com/pkg/errors"
 	"os"
 	"strings"
+
+	"github.com/DavidNix/boggle/trie"
+	"github.com/pkg/errors"
 )
 
 type Dictionary struct {
@@ -23,7 +24,7 @@ func NewDictionary() (Dictionary, error) {
 
 	sn := bufio.NewScanner(f)
 	for sn.Scan() {
-		trie.Insert(sn.Text())
+		trie.Insert([]rune(sn.Text()))
 	}
 	if sn.Err() != nil {
 		return Dictionary{}, errors.Wrap(sn.Err(), "NewDictionary scan")
@@ -32,6 +33,7 @@ func NewDictionary() (Dictionary, error) {
 	return Dictionary{Node: trie}, nil
 }
 
-func (d Dictionary) Exists(word string) (prefixExists, wordExists bool) {
-	return d.Node.Exists(strings.ToLower(word))
+func (d Dictionary) Exists(word []rune) (prefixExists, wordExists bool) {
+	normalized := strings.ToLower(string(word))
+	return d.Node.Exists([]rune(normalized))
 }

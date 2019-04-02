@@ -7,12 +7,13 @@ import (
 
 func TestNode_InsertExists(t *testing.T) {
 	trie := New()
-	trie.Insert("cabbage")
+	trie.Insert([]rune("cabbage"))
+	trie.Insert([]rune("⛷"))
 
-	for _, tt := range []struct{
-		Word string
+	for _, tt := range []struct {
+		Word           string
 		Prefix, Exists bool
-	} {
+	}{
 		{"cabbage", true, true},
 		{"cabx", false, false},
 		{"cabb", true, false},
@@ -21,8 +22,9 @@ func TestNode_InsertExists(t *testing.T) {
 		{"", false, false},
 		{"c", true, false},
 		{"xoxo", false, false},
+		{"⛷", true, true},
 	} {
-		prefix, ok := trie.Exists(tt.Word)
+		prefix, ok := trie.Exists([]rune(tt.Word))
 		require.Equal(t, tt.Prefix, prefix, "prefix for %s", tt.Word)
 		require.Equal(t, tt.Exists, ok, "exists for %s", tt.Word)
 	}
