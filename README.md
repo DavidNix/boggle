@@ -5,7 +5,7 @@ A boggle solver written in Go.
 
 Build the main package in `cmd` to run.
 
-You may be able to see the site at: (Heroku free dyno. YMMV)
+You may be able to see the site at: https://davidnix-boggle-solver.herokuapp.com/ (Heroku free dyno. YMMV)
 
 
 # Known Limitations and TODOs
