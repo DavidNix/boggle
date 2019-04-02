@@ -1,6 +1,7 @@
 package server
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/DavidNix/boggle"
 	"html/template"
@@ -13,6 +14,23 @@ import (
 var re = regexp.MustCompile(`[^a-zA-Z]+`)
 
 const boardSize = 4
+
+type entryPresenter struct {
+	boggle.Entry
+}
+
+func (p entryPresenter) PathJSArray() string {
+	path := p.Entry.Path
+	arr := make([]string, len(path))
+	for i := range path {
+		arr[i] = path[i].String()
+	}
+	d, err := json.Marshal(arr)
+	if err != nil {
+		return err.Error()
+	}
+	return string(d)
+}
 
 func solve(dict boggle.Dictionary) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -40,13 +58,18 @@ func solve(dict boggle.Dictionary) http.HandlerFunc {
 	}
 }
 
-func renderResults(w http.ResponseWriter, board boggle.Board, results []boggle.Entry) {
-	sort.Slice(results, func(i, j int) bool {
-		return len(results[i].Word) > len(results[j].Word)
+func renderResults(w http.ResponseWriter, board boggle.Board, entries []boggle.Entry) {
+	sort.Slice(entries, func(i, j int) bool {
+		return len(entries[i].Word) > len(entries[j].Word)
 	})
+	ep := make([]entryPresenter, len(entries))
+	for i := range entries {
+		ep[i] = entryPresenter{entries[i]}
+	}
 	data := struct{
-		Entries []boggle.Entry
-	} {Entries: results}
+		Board boggle.Board
+		Entries []entryPresenter
+	} {Board: board, Entries: ep}
 	if e := resultsTmpl.Execute(w, data); e != nil {
 		panic(e)
 	}
@@ -60,23 +83,59 @@ var resultsTmpl = template.Must(template.New("results").Parse(`
   <meta charset="utf-8">
   <title>Boggle Solver</title>
   <style>
-	a {
-		margin: 5px;
-		display: block;	
+	body {
+		margin: 30px;
+	}
+	div#board {
+		display: grid;
+		grid-template-columns: 2em 2em 2em 2em;
+		font-size: 3em;
+		margin-bottom: 15px;
+		text-transform: uppercase;
+	}
+	div#results {
+		display: grid;
+		font-size: 1.5em;
+		grid-template-columns: repeat(4, 1fr);
+		grid-gap: 15px;
+		width: 30%;
+
+	}
+	div.results a {
+		display: block;
 	}
   </style>
 </head>
 
 <body>
 	<h1>Boggle Results</h1>
-	<div>Board is Here</div>
-	{{ range .Entries }}
-		<a href="#">{{ .Word }}</a>
+	<div id="board">
+	{{range $row, $letters := .Board}}
+		{{range $col, $letter := $letters}}
+		<span id="{{$row}}-{{$col}}">{{$letter}}</span>
+		{{end}}
 	{{end}}
+	</div>
+	<p>Click to highlight the words.</p>
+	<div id="results">
+	{{range .Entries}}
+		<a href="#" data-path='{{ .PathJSArray }}'>{{ .Word }}</a>
+	{{end}}
+	</div>
 
 	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
 	integrity="sha256-3edrmyuQ0w65f8gfBsqowzjJe2iM6n0nKciPUp8y+7E="
 	crossorigin="anonymous"></script>
+
+	<script>
+	$('#results a').on('click', function() {
+		$('#board span').css("color", "black");
+		path = $(this).data('path');
+		path.forEach(function (coord, i){
+			$("#"+coord).css("color", "red");
+		});
+	});
+	</script>
 
 </body>
 </html>

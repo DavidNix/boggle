@@ -1,6 +1,7 @@
 package boggle
 
 import (
+	"fmt"
 	"sync"
 )
 
@@ -8,7 +9,7 @@ type Coordinate []int
 
 func (c Coordinate) Row() int { return c[0] }
 func (c Coordinate) Col() int { return c[1] }
-
+func (c Coordinate) String() string {return fmt.Sprintf("%d-%d", c.Row(), c.Col())}
 
 type BoardNode struct {
 	Parent *BoardNode
