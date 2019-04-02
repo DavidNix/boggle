@@ -1,9 +1,10 @@
 package main
 
 import (
-	"github.com/DavidNix/boggle/server"
 	"log"
 	"os"
+
+	"github.com/DavidNix/boggle/server"
 )
 
 func main() {
