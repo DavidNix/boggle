@@ -5,9 +5,12 @@ import (
 	"github.com/DavidNix/boggle"
 	"html/template"
 	"net/http"
+	"regexp"
 	"sort"
 	"strings"
 )
+
+var re = regexp.MustCompile(`[^a-zA-Z]+`)
 
 const boardSize = 4
 
@@ -19,6 +22,7 @@ func solve(dict boggle.Dictionary) http.HandlerFunc {
 		board := make(boggle.Board, boardSize)
 		for i := 0; i < boardSize; i++ {
 			text := r.Form.Get(fmt.Sprintf("row%d", i))
+			text = re.ReplaceAllString(text, "")
 			board[i] = strings.Split(text, "")
 		}
 
