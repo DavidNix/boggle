@@ -8,11 +8,11 @@ import (
 
 type visitor struct {
 	Visited []string
-	Nodes []*Node
+	Nodes []*BoardNode
 	Stop func(s string) bool
 }
 
-func (v *visitor) Visit(node *Node, letters string) bool {
+func (v *visitor) Visit(node *BoardNode, letters string) bool {
 	v.Visited = append(v.Visited, letters)
 	v.Nodes  = append(v.Nodes, node)
 	if v.Stop == nil {

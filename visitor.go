@@ -15,12 +15,15 @@ func NewVisitor(dict Dictionary) *WordFinder {
 	return &WordFinder{dict: dict}
 }
 
-func (wf *WordFinder) Visit(node *Node, letters string) bool {
+func (wf *WordFinder) Visit(node *BoardNode, letters string) bool {
 	if len(letters) < 3 {
 		return false
 	}
-	_, ok := wf.dict.Exists(letters)
-	if ok {
+	prefix, isWord := wf.dict.Exists(letters)
+	if !prefix {
+		return true
+	}
+	if isWord {
 		wf.Found = append(wf.Found, Entry{Word: letters, Path: node.Path()})
 	}
 	return false
@@ -39,12 +42,15 @@ func NewConcurrentVisitor(dict Dictionary) *ConcurrentFinder {
 	}
 }
 
-func (cf *ConcurrentFinder) Visit(node *Node, letters string) bool {
+func (cf *ConcurrentFinder) Visit(node *BoardNode, letters string) bool {
 	if len(letters) < 3 {
 		return false
 	}
-	_, ok := cf.dict.Exists(letters)
-	if ok {
+	prefix, isWord := cf.dict.Exists(letters)
+	if !prefix {
+		return true
+	}
+	if isWord {
 		cf.Entries <- Entry{Word: letters, Path: node.Path()}
 	}
 	return false

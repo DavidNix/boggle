@@ -2,7 +2,7 @@ package boggle
 
 import (
 	"bufio"
-	"github.com/DavidNix/boggle/internal/trie"
+	"github.com/DavidNix/boggle/trie"
 	"github.com/pkg/errors"
 	"os"
 	"strings"
