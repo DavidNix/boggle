@@ -121,6 +121,7 @@ var resultsTmpl = template.Must(template.New("results").Parse(`
 		{{end}}
 	{{end}}
 	</div>
+	<p>Note: "Q" is expanded to "QU" per Boggle rules.</p>
 	<p>Click a word to highlight it on the board.</p>
 	<div id="results">
 	{{range .Entries}}

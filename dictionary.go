@@ -9,8 +9,15 @@ import (
 	"github.com/pkg/errors"
 )
 
+type Lang int
+
+const (
+	EnLang Lang = iota
+)
+
 type Dictionary struct {
 	*trie.Node
+	Language Lang
 }
 
 func NewDictionary() (Dictionary, error) {
@@ -30,7 +37,7 @@ func NewDictionary() (Dictionary, error) {
 		return Dictionary{}, errors.Wrap(sn.Err(), "NewDictionary scan")
 	}
 
-	return Dictionary{Node: trie}, nil
+	return Dictionary{Node: trie, Language: EnLang}, nil
 }
 
 func (d Dictionary) Exists(word []rune) (prefixExists, wordExists bool) {

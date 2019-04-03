@@ -1,9 +1,10 @@
 package boggle
 
 import (
-	"github.com/stretchr/testify/require"
 	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestWordFinder_Visit(t *testing.T) {
@@ -84,4 +85,25 @@ func TestWordFinder_Visit_4x4_concurrent(t *testing.T) {
 	}
 
 	require.Empty(t, missing)
+}
+
+func TestWordFinder_Visit_letterQ(t *testing.T) {
+	en, err := NewDictionary()
+	require.NoError(t, err)
+	v := NewVisitor(en)
+	board := Board{
+		{"Q", "I", "C", "K"},
+		{"X", "X", "X", "X"},
+		{"X", "X", "X", "X"},
+		{"X", "X", "X", "X"},
+	}
+	board.Traverse(v)
+
+	require.NotEmpty(t, v.Found)
+	for _, f := range v.Found {
+		if strings.ToUpper(f.Word) == "QUICK" {
+			return
+		}
+	}
+	require.Fail(t, "did not find word: QUICK")
 }
