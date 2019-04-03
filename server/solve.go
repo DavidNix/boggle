@@ -3,12 +3,13 @@ package server
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/DavidNix/boggle"
 	"html/template"
 	"net/http"
 	"regexp"
 	"sort"
 	"strings"
+
+	"github.com/DavidNix/boggle"
 )
 
 var re = regexp.MustCompile(`[^a-zA-Z]+`)
@@ -86,23 +87,27 @@ var resultsTmpl = template.Must(template.New("results").Parse(`
 	body {
 		margin: 30px;
 	}
-	div#board {
+	#board {
 		display: grid;
 		grid-template-columns: 2em 2em 2em 2em;
 		font-size: 3em;
 		margin-bottom: 15px;
 		text-transform: uppercase;
 	}
-	div#results {
+	#results {
 		display: grid;
 		font-size: 1.5em;
 		grid-template-columns: repeat(4, 1fr);
 		grid-gap: 15px;
 		width: 30%;
-
+		text-transform: lowercase;
 	}
-	div.results a {
+	#results a {
+		color: blue;
 		display: block;
+	}
+	#results a:visited {
+		color: blue;
 	}
   </style>
 </head>
@@ -112,11 +117,11 @@ var resultsTmpl = template.Must(template.New("results").Parse(`
 	<div id="board">
 	{{range $row, $letters := .Board}}
 		{{range $col, $letter := $letters}}
-		<span id="{{$row}}-{{$col}}">{{$letter}}</span>
+		<span id="{{$row}}-{{$col}}" class="letter">{{$letter}}</span>
 		{{end}}
 	{{end}}
 	</div>
-	<p>Click to highlight the words.</p>
+	<p>Click a word to highlight it on the board.</p>
 	<div id="results">
 	{{range .Entries}}
 		<a href="#" data-path='{{ .PathJSArray }}'>{{ .Word }}</a>
