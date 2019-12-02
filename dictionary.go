@@ -27,17 +27,17 @@ func NewDictionary() (Dictionary, error) {
 	}
 	defer f.Close()
 
-	trie := trie.New()
+	node := trie.New()
 
 	sn := bufio.NewScanner(f)
 	for sn.Scan() {
-		trie.Insert([]rune(sn.Text()))
+		node.Insert([]rune(sn.Text()))
 	}
 	if sn.Err() != nil {
 		return Dictionary{}, errors.Wrap(sn.Err(), "NewDictionary scan")
 	}
 
-	return Dictionary{Node: trie, Language: EnLang}, nil
+	return Dictionary{Node: node, Language: EnLang}, nil
 }
 
 func (d Dictionary) Exists(word []rune) (prefixExists, wordExists bool) {
